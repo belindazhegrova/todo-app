@@ -1,0 +1,46 @@
+.ant-modal, .ant-modal-content {
+  padding: 0px 0px 5px 0px !important;
+ } 
+
+ .ql-editor  {
+  height: 150px !important;
+ }
+
+ .ant-modal .ant-modal-close {
+  top:6px !important
+ }
+
+/* 
+.pointer {
+  width: 120px;
+  height: 40px;
+  position: relative;
+  background: red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pointer:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid white;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+}
+.pointer:before {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid red;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+}
+   */
+
