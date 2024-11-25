@@ -1,132 +1,160 @@
 import {
   DownloadOutlined,
   PlusOutlined,
-  SearchOutlined
-} from '@ant-design/icons';
-import { Button, Col, Flex, Input, Layout, Row } from 'antd';
-import React, { useState } from 'react';
-import Categories from '../components/Categories/Categories';
-import CustomButton from '../components/CustomButton/CustomButton';
-import CustomModal from '../components/CustomModal/CustomModal';
-import CustomTable from '../components/Table/CustomTable';
-import { categories } from '../mockData/categories';
+  SearchOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  Col,
+  Flex,
+  Input,
+  Layout,
+  Row,
+  Spin,
+  Tag,
+  Typography,
+} from "antd";
+import React, { useState } from "react";
+import Categories from "../layouts/Categories/Categories";
+import CustomButton from "../components/CustomButton/CustomButton";
+import CustomModal from "../components/CustomModal/CustomModal";
+import CustomTable from "../components/Table/CustomTable";
+import { categories } from "../mockData/categories";
 
-const {  Content } = Layout;
+const { Content } = Layout;
+const { Text } = Typography;
 
 const Main = () => {
-    const [data,setData] = useState(categories)
-    const [selectedCategory,setSelectedCategory] = useState('')
-    const [openModal, setOpenModal] = useState(false);
-    const [editMode,setEditMode] = useState(false)
-    const [modalData,setModalData] = useState({
-      title:'',
-      status:'',
-      category:'',
-      asignTo:'',
-      notes:'',
-    })
+  const [data, setData] = useState(categories);
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const handleOpenModal = (category) => {
-        setSelectedCategory(category)
-        setOpenModal(true)
-        setModalData({
-          title:'',
-          status:category ? category.status : '',
-          category:'',
-          asignTo:'',
-          notes:'',
-        })
-        setEditMode(false)
-    
-    }
-  
-    const handleCategoryChange = (data) => {
-         setSelectedCategory(data)
-    }
+  const handleStatusChange = (selectedCategory) => {
+    setFilterStatus(selectedCategory);
+  };
 
-    const handleEditMode = (data) => {
-      setEditMode(true)
-      setOpenModal(true)
-      setModalData(data)
-    }
+  const addTask = (newTask) => {
+    setIsLoading(true);
+    setData((prev) =>
+      prev.map((category) =>
+        category.status === newTask.status
+          ? {
+              ...category,
+              items: [...category.items, newTask],
+            }
+          : category
+      )
+    );
+    setIsLoading(false);
+  };
 
-    const handleSubmit = () => {
-      const newItem = {
-        title:modalData.title,
-        status:modalData.status,
-        category:modalData.category,
-        asignTo:modalData.asignTo,
-        notes:modalData.notes,
-      }
-      if (editMode) {
-          const updatedItems = selectedCategory.items.map((item) => 
-             item.status === modalData.status ? newItem : item
-          );
-          const updatedData = data.map((cat) =>
-            cat.id === selectedCategory.id ? { ...cat, items: updatedItems } : cat
-          );
-          setData(updatedData);
-          
-        } else {
-          const addedData = data.map((d) =>
-            d.id === selectedCategory.id
-              ? { ...d, items: [...d.items, newItem] }
-            : d
-          ); 
-          setData(addedData);
-          setEditMode(false)
-          setModalData({
-            title:'',
-            category:'',
-            asignTo:'',
-            notes:''
-          })
-      }
-      setOpenModal(false)
-    }
+  console.log("filterStauts", filterStatus);
 
-
-    const handleDelete = (record) => {
-    
-      console.log('record',record)
-      // const filterCategory = category.filter(cat => cat.status !== record.status)
-      // const filteredCategory = category.filter((cat) => cat.status !== record.status)
-      // const filteredCategory = category.filter((cat) => console.log('cat',cat))
-
-      // const deletedData = data.map((d) => d.id === category.id ? {...d, items:filteredCategory} : d)
-      // setData(deletedData);
-    }
-
-
-
+  const filteredTasks =
+    filterStatus === "All"
+      ? data.flatMap((category) => category.items)
+      : data
+          .filter((category) => category.status === filterStatus.status)
+          .flatMap((category) => category.items);
 
   return (
-    <Content style={{backgroundColor:'#ffffff',margin:'20px',borderRadius:'10px',padding:'40px',minHeight:'80vh'}}>   
-       <Categories categories={data} onChange={handleCategoryChange} />
-        <Row justify='center' style={{margin:'20px'}}>
-          <Col span={12}>  
-            <Input size="large" placeholder="Search..." style={{width:'350px'}} prefix={<SearchOutlined style={{fontSize:"18px"}} />} />
-          </Col>
-          <Col  span={12}>
-              <Flex justify='end'gap='small'>
-                <Button type="primary" icon={<DownloadOutlined />} style={{width:'32px', height:'32px',backgroundColor:'#1264A3'}} />
-                <CustomButton  icon={<PlusOutlined />} backgroundColor='#71CF48' title='Create New' onChange={() => handleOpenModal(selectedCategory)} />
-              </Flex>
-          </Col>
-       </Row>
-            <CustomTable selectedCategory={selectedCategory}  data={data}  handleEditMode={handleEditMode}  handleDelete={handleDelete} />
-       <CustomModal 
-          open={openModal}
-          setOpen={setOpenModal}  
-          handleSubmit={handleSubmit} 
-          selectedCategory={selectedCategory}
-          modalData={modalData} 
-          setModalData={setModalData}/>
-    
-    </Content>
-    
-    
-  )
-}
+    <Content
+      style={{
+        backgroundColor: "#ffffff",
+        margin: "20px",
+        borderRadius: "10px",
+        padding: "40px",
+        minHeight: "80vh",
+      }}
+    >
+      <Row justify="center" style={{ marginBottom: "30px" }}>
+        <Col span={24}>
+          <Categories categories={data} onChange={handleStatusChange} />
+        </Col>
+      </Row>
 
-export default Main
+      <Row justify="center" style={{ marginBottom: "20px" }} gutter={16}>
+        <Col span={12}>
+          <Input
+            size="large"
+            placeholder="Search..."
+            style={{ width: "100%" }}
+            prefix={<SearchOutlined style={{ fontSize: "18px" }} />}
+          />
+        </Col>
+        <Col span={12}>
+          <Flex justify="end" gap="small">
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              style={{
+                width: "32px",
+                height: "32px",
+                backgroundColor: "#1264A3",
+              }}
+            />
+            <CustomButton
+              icon={<PlusOutlined />}
+              backgroundColor="#71CF48"
+              title="Create New"
+              onChange={() => setModalOpen(true)}
+            />
+            <CustomButton
+              icon={<ReloadOutlined />}
+              backgroundColor="#B0B0B0"
+              title="All Data"
+              onChange={() => setFilterStatus("All")}
+            />
+          </Flex>
+        </Col>
+      </Row>
+      {filterStatus && (
+        <Row justify="center" style={{ marginBottom: "20px" }}>
+          <Col span={24}>
+            <Text
+              style={{
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginRight: "5px",
+              }}
+            >
+              Selected Status:
+            </Text>
+            <Tag
+              style={{ padding: "4px 25px", color: "white" }}
+              color={
+                filterStatus === "All"
+                  ? "#b0b0b0"
+                  : filterStatus.backgroundColor
+              }
+            >
+              {filterStatus === "All" ? "All" : filterStatus.status}
+            </Tag>
+          </Col>
+        </Row>
+      )}
+
+      <Row style={{ marginBottom: "20px" }}>
+        <Col span={24}>
+          <Spin spinning={isLoading} tip="Loading...">
+            <CustomTable data={filteredTasks} />
+          </Spin>
+        </Col>
+      </Row>
+
+      {modalOpen && (
+        <CustomModal
+          filterStatus={filterStatus}
+          categories={data}
+          onClose={() => setModalOpen(false)}
+          onSubmit={addTask}
+          open={() => setModalOpen(true)}
+        />
+      )}
+    </Content>
+  );
+};
+
+export default Main;
