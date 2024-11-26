@@ -30,27 +30,54 @@ const Main = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [editMode, setEditMode] = useState(null);
 
   const handleStatusChange = (selectedCategory) => {
     setFilterStatus(selectedCategory);
   };
 
-  const addTask = (newTask) => {
+  const handleSubmitTask = (newTask) => {
     setIsLoading(true);
-    setData((prev) =>
-      prev.map((category) =>
-        category.status === newTask.status
-          ? {
-              ...category,
-              items: [...category.items, newTask],
-            }
-          : category
-      )
-    );
+    if (editMode) {
+      setData((prev) => {
+        const updatedData = prev.map((category) => ({
+          ...category,
+          items: category.items.filter((item) => item.id !== newTask.id),
+        }));
+
+        return updatedData.map((category) =>
+          category.status === newTask.status
+            ? {
+                ...category,
+                items: [...category.items, newTask],
+              }
+            : category
+        );
+      });
+    } else {
+      setData((prev) =>
+        prev.map((category) =>
+          category.status === newTask.status
+            ? {
+                ...category,
+                items: [...category.items, newTask],
+              }
+            : category
+        )
+      );
+    }
     setIsLoading(false);
   };
 
-  console.log("filterStauts", filterStatus);
+  const openEditModal = (task) => {
+    setEditMode(task);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setEditMode(null);
+  };
 
   const filteredTasks =
     filterStatus === "All"
@@ -139,7 +166,7 @@ const Main = () => {
       <Row style={{ marginBottom: "20px" }}>
         <Col span={24}>
           <Spin spinning={isLoading} tip="Loading...">
-            <CustomTable data={filteredTasks} />
+            <CustomTable data={filteredTasks} openEditModal={openEditModal} />
           </Spin>
         </Col>
       </Row>
@@ -148,8 +175,9 @@ const Main = () => {
         <CustomModal
           filterStatus={filterStatus}
           categories={data}
-          onClose={() => setModalOpen(false)}
-          onSubmit={addTask}
+          editMode={editMode}
+          onClose={closeModal}
+          onSubmit={handleSubmitTask}
           open={() => setModalOpen(true)}
         />
       )}
