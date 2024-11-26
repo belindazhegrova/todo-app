@@ -16,11 +16,12 @@ import {
   Typography,
 } from "antd";
 import React, { useState } from "react";
-import Categories from "../layouts/Categories/Categories";
-import CustomButton from "../components/CustomButton/CustomButton";
-import CustomModal from "../components/CustomModal/CustomModal";
-import CustomTable from "../components/Table/CustomTable";
+import Categories from "../layouts/Categories";
+import CustomButton from "../components/CustomButton";
+import CustomModal from "../components/CustomModal";
+import CustomTable from "../components/CustomTable";
 import { categories } from "../mockData/categories";
+import ActionBar from "../layouts/ActionBar";
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -88,6 +89,7 @@ const Main = () => {
 
   return (
     <Content
+      className="main"
       style={{
         backgroundColor: "#ffffff",
         margin: "20px",
@@ -96,74 +98,23 @@ const Main = () => {
         minHeight: "80vh",
       }}
     >
-      <Row justify="center" style={{ marginBottom: "30px" }}>
+      <Row className="categories" justify="center">
         <Col span={24}>
           <Categories categories={data} onChange={handleStatusChange} />
         </Col>
       </Row>
-
-      <Row justify="center" style={{ marginBottom: "20px" }} gutter={16}>
-        <Col span={12}>
-          <Input
-            size="large"
-            placeholder="Search..."
-            style={{ width: "100%" }}
-            prefix={<SearchOutlined style={{ fontSize: "18px" }} />}
-          />
-        </Col>
-        <Col span={12}>
-          <Flex justify="end" gap="small">
-            <Button
-              type="primary"
-              icon={<DownloadOutlined />}
-              style={{
-                width: "32px",
-                height: "32px",
-                backgroundColor: "#1264A3",
-              }}
-            />
-            <CustomButton
-              icon={<PlusOutlined />}
-              backgroundColor="#71CF48"
-              title="Create New"
-              onChange={() => setModalOpen(true)}
-            />
-            <CustomButton
-              icon={<ReloadOutlined />}
-              backgroundColor="#B0B0B0"
-              title="All Data"
-              onChange={() => setFilterStatus("All")}
-            />
-          </Flex>
-        </Col>
+      <Row
+        className="container"
+        gutter={[8, 16]}
+        style={{ margin: "25px 0px" }}
+      >
+        <ActionBar
+          setModalOpen={setModalOpen}
+          setFilterStatus={setFilterStatus}
+          filterStatus={filterStatus}
+        />
       </Row>
-      {filterStatus && (
-        <Row justify="center" style={{ marginBottom: "20px" }}>
-          <Col span={24}>
-            <Text
-              style={{
-                fontSize: "14px",
-                fontWeight: "bold",
-                marginRight: "5px",
-              }}
-            >
-              Selected Status:
-            </Text>
-            <Tag
-              style={{ padding: "4px 25px", color: "white" }}
-              color={
-                filterStatus === "All"
-                  ? "#b0b0b0"
-                  : filterStatus.backgroundColor
-              }
-            >
-              {filterStatus === "All" ? "All" : filterStatus.status}
-            </Tag>
-          </Col>
-        </Row>
-      )}
-
-      <Row style={{ marginBottom: "20px" }}>
+      <Row className="table">
         <Col span={24}>
           <Spin spinning={isLoading} tip="Loading...">
             <CustomTable data={filteredTasks} openEditModal={openEditModal} />

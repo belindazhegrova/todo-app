@@ -1,6 +1,7 @@
 import React from "react";
-import CustomHeader from "./layouts/Header/CustomHeader";
+
 import Main from "./pages/Main";
+import CustomHeader from "./layouts/CustomHeader";
 
 function App() {
   return (

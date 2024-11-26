@@ -8,7 +8,7 @@ import { Col, Flex, Input, Modal, Row, Select, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import CustomButton from "../CustomButton/CustomButton";
+import CustomButton from "../CustomButton";
 
 const { Title } = Typography;
 
