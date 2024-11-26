@@ -1,8 +1,49 @@
+import React, { useEffect, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Table, Tag } from "antd";
-import React from "react";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-const CustomTable = ({ data }) => {
+const type = "row";
+
+const DraggableRow = ({ record, index, moveRow, children, ...restProps }) => {
+  const [, drag] = useDrag({
+    type,
+    item: { index },
+  });
+
+  const [, drop] = useDrop({
+    accept: type,
+    hover: (item) => {
+      if (item.index !== index) {
+        moveRow(item.index, index);
+        item.index = index;
+      }
+    },
+  });
+
+  return (
+    <tr ref={(node) => drag(drop(node))} {...restProps}>
+      {children}
+    </tr>
+  );
+};
+
+const CustomTable = ({ data, openEditModal }) => {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    setTableData(data || []);
+  }, [data]);
+
+  const moveRow = (fromIndex, toIndex) => {
+    const updatedData = [...tableData];
+    const [movedRow] = updatedData.splice(fromIndex, 1);
+    updatedData.splice(toIndex, 0, movedRow);
+
+    setTableData(updatedData);
+  };
+
   const columns = [
     {
       title: "Task Title",
@@ -65,8 +106,8 @@ const CustomTable = ({ data }) => {
       key: "action",
       render: (record) => (
         <div>
-          {/* <Button
-            onClick={() => handleEditMode(record)}
+          <Button
+            onClick={() => openEditModal(record)}
             style={{
               width: "60px",
               height: "30px",
@@ -75,7 +116,7 @@ const CustomTable = ({ data }) => {
             }}
           >
             Edit
-          </Button> */}
+          </Button>
           {/* <Button
             onClick={() => handleDelete(record)}
             style={{
@@ -91,14 +132,26 @@ const CustomTable = ({ data }) => {
   ];
 
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <Table
-        dataSource={data}
+        dataSource={tableData}
         columns={columns}
         pagination={false}
-        rowKey="id"
+        rowKey={(record, index) => index}
+        components={{
+          body: {
+            row: (props) => (
+              <DraggableRow
+                {...props}
+                index={props["data-row-key"]}
+                record={tableData[props["data-row-key"]]}
+                moveRow={moveRow}
+              />
+            ),
+          },
+        }}
       />
-    </>
+    </DndProvider>
   );
 };
 

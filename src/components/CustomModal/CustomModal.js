@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import styled from "@emotion/styled";
 import { Col, Flex, Input, Modal, Row, Select, Typography } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import CustomButton from "../CustomButton/CustomButton";
@@ -47,7 +47,14 @@ const StyledDiv = styled.div`
   }
 `;
 
-const CustomModal = ({ categories, onClose, onSubmit, open, filterStatus }) => {
+const CustomModal = ({
+  categories,
+  onClose,
+  onSubmit,
+  open,
+  filterStatus,
+  editMode,
+}) => {
   const [hoveredStatus, setHoveredStatus] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -56,6 +63,18 @@ const CustomModal = ({ categories, onClose, onSubmit, open, filterStatus }) => {
     status: filterStatus.status || "",
     category: "",
   });
+
+  useEffect(() => {
+    if (editMode) {
+      setFormData({
+        title: editMode.title,
+        notes: editMode.notes,
+        asignTo: editMode.asignTo,
+        status: editMode.status,
+        category: editMode.category,
+      });
+    }
+  }, [editMode]);
 
   const handleMouseEnter = (status) => {
     setHoveredStatus(status);
@@ -66,10 +85,11 @@ const CustomModal = ({ categories, onClose, onSubmit, open, filterStatus }) => {
   };
 
   const handleSubmit = () => {
-    if (!formData.title || !formData.status || !formData.category) {
-      alert("Please fill in all required fields.");
-      return;
-    }
+    // if (!formData.title || !formData.status || !formData.category) {
+    //   alert("Please fill in all required fields.");
+    //   return;
+    // }
+
     onSubmit(formData);
     setFormData({
       title: "",
@@ -93,7 +113,7 @@ const CustomModal = ({ categories, onClose, onSubmit, open, filterStatus }) => {
             paddingLeft: "10px",
           }}
         >
-          New Task
+          {editMode ? "Edit Task" : "Add Task"}
         </div>
       }
       centered
