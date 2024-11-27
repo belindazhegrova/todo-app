@@ -44,6 +44,17 @@ const CustomTable = ({ data, openEditModal }) => {
     setTableData(updatedData);
   };
 
+  const getStatusColor = (status) => {
+    const statusColors = {
+      New: "#EE8A35",
+      "in Progress": "#F6CB52",
+      "on Hold": "#E9C466",
+      Canceled: "#E75651",
+      Completed: "#7AC14D",
+    };
+    return statusColors[status] || "#EE8A35";
+  };
+
   const columns = [
     {
       title: "Task Title",
@@ -62,30 +73,7 @@ const CustomTable = ({ data, openEditModal }) => {
 
       render: (status) => (
         <span>
-          <Tag
-            color={
-              status === "New"
-                ? "#EE8A35"
-                : status === "in Progress"
-                ? "#F6CB52"
-                : status === "on Hold"
-                ? "#E9C466"
-                : status === "Canceled"
-                ? "#E75651"
-                : status === "Completed"
-                ? "#7AC14D"
-                : "#EE8A35"
-            }
-            style={{
-              width: "130px",
-              height: "26px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {status}
-          </Tag>
+          <Tag color={getStatusColor(status)}>{status}</Tag>
         </span>
       ),
     },
