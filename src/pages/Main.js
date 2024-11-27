@@ -1,4 +1,4 @@
-import { Col, Layout, Row, Typography } from "antd";
+import { Col, Layout, Row, Modal } from "antd";
 import React, { useState } from "react";
 import Categories from "../layouts/Categories";
 import CustomModal from "../components/CustomModal";
@@ -6,7 +6,8 @@ import CustomTable from "../components/CustomTable";
 import ActionBar from "../layouts/ActionBar";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { addTask, editTask } from "../store/slices/toDoSlice";
+import { addTask, deleteTask, editTask } from "../store/slices/toDoSlice";
+import CustomDeleteModal from "../components/CustomDeleteModal";
 
 const { Content } = Layout;
 
@@ -17,6 +18,8 @@ const Main = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTaskId, setDeleteTaskId] = useState(null);
   const [searchTitle, setSearchTitle] = useState("");
 
   const handleStatusChange = (selectedCategory) => {
@@ -38,9 +41,23 @@ const Main = () => {
     setModalOpen(true);
   };
 
+  const openDeleteModal = (taskId) => {
+    setDeleteTaskId(taskId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (deleteTaskId) {
+      dispatch(deleteTask({ id: deleteTaskId }));
+      setDeleteModalOpen(false);
+      setDeleteTaskId(null);
+    }
+  };
+
   const closeModal = () => {
     setModalOpen(false);
     setEditMode(null);
+    setDeleteModalOpen(false);
   };
 
   const handleSearchChange = (event) => {
@@ -50,26 +67,17 @@ const Main = () => {
 
   const filteredTasks = (data || [])
     .flatMap((category) => {
-      console.log("Category:", category); // Log each category for debugging
       if (filterStatus === "All") {
-        console.log("All status filter applied");
         return category.items;
       }
       if (category.status === filterStatus.status) {
-        console.log("Status match found, returning items");
         return category.items;
       }
-      console.log("No status match");
-      return []; // If the status doesn't match, return an empty array
+      return [];
     })
     .filter((task) => {
-      console.log("Task:", task); // Log each task for debugging
       return task.title.toLowerCase().includes(searchTitle.toLowerCase());
     });
-
-  console.log("Filtered Tasks:", filteredTasks);
-  console.log("data111", data);
-  console.log("filteredTasks", filteredTasks);
 
   return (
     <Content
@@ -102,7 +110,12 @@ const Main = () => {
       </Row>
       <Row className="table">
         <Col span={24}>
-          <CustomTable data={filteredTasks} openEditModal={openEditModal} />
+          <CustomTable
+            data={filteredTasks}
+            openEditModal={openEditModal}
+            handleDelete={handleDelete}
+            openDeleteModal={openDeleteModal}
+          />
         </Col>
       </Row>
 
@@ -114,6 +127,13 @@ const Main = () => {
           onClose={closeModal}
           onSubmit={handleSubmitTask}
           open={() => setModalOpen(true)}
+        />
+      )}
+      {deleteModalOpen && (
+        <CustomDeleteModal
+          open={deleteModalOpen}
+          onSubmit={handleDelete}
+          onClose={closeModal}
         />
       )}
     </Content>
