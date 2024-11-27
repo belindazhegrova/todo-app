@@ -10,11 +10,19 @@ import CustomButton from "../../components/CustomButton";
 
 const { Text } = Typography;
 
-const ActionBar = ({ setModalOpen, setFilterStatus, filterStatus }) => {
+const ActionBar = ({
+  setModalOpen,
+  setFilterStatus,
+  filterStatus,
+  handleSearchChange,
+  searchTitle,
+}) => {
   return (
     <>
       <Col span={12}>
         <Input
+          value={searchTitle}
+          onChange={handleSearchChange}
           size="large"
           placeholder="Search..."
           style={{ width: "100%" }}

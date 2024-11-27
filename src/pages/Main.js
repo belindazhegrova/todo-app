@@ -32,6 +32,7 @@ const Main = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(null);
+  const [searchTitle, setSearchTitle] = useState("");
 
   const handleStatusChange = (selectedCategory) => {
     setFilterStatus(selectedCategory);
@@ -39,34 +40,37 @@ const Main = () => {
 
   const handleSubmitTask = (newTask) => {
     setIsLoading(true);
+
     if (editMode) {
       setData((prev) => {
         const updatedData = prev.map((category) => ({
           ...category,
-          items: category.items.filter((item) => item.id !== newTask.id),
+          items: category.items.map((item) =>
+            item.id === newTask.id
+              ? {
+                  ...item,
+                  title: newTask.title,
+                  status: newTask.status,
+                  notes: newTask.notes,
+                  asignTo: newTask.asignTo,
+                  category: newTask.category,
+                }
+              : item
+          ),
         }));
-
-        return updatedData.map((category) =>
+        return updatedData;
+      });
+    } else {
+      setData((prev) => {
+        const newTaskWithId = { ...newTask, id: Date.now() };
+        return prev.map((category) =>
           category.status === newTask.status
-            ? {
-                ...category,
-                items: [...category.items, newTask],
-              }
+            ? { ...category, items: [...category.items, newTaskWithId] }
             : category
         );
       });
-    } else {
-      setData((prev) =>
-        prev.map((category) =>
-          category.status === newTask.status
-            ? {
-                ...category,
-                items: [...category.items, newTask],
-              }
-            : category
-        )
-      );
     }
+
     setIsLoading(false);
   };
 
@@ -80,12 +84,22 @@ const Main = () => {
     setEditMode(null);
   };
 
-  const filteredTasks =
-    filterStatus === "All"
-      ? data.flatMap((category) => category.items)
-      : data
-          .filter((category) => category.status === filterStatus.status)
-          .flatMap((category) => category.items);
+  const handleSearchChange = (event) => {
+    const { value } = event.target;
+    setSearchTitle(value);
+  };
+
+  const filteredTasks = data
+    .flatMap((category) =>
+      filterStatus === "All"
+        ? category.items
+        : category.status === filterStatus.status
+        ? category.items
+        : []
+    )
+    .filter((task) =>
+      task.title.toLowerCase().includes(searchTitle.toLowerCase())
+    );
 
   return (
     <Content
@@ -112,6 +126,8 @@ const Main = () => {
           setModalOpen={setModalOpen}
           setFilterStatus={setFilterStatus}
           filterStatus={filterStatus}
+          handleSearchChange={handleSearchChange}
+          searchTitle={searchTitle}
         />
       </Row>
       <Row className="table">

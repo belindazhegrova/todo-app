@@ -89,8 +89,12 @@ const CustomModal = ({
     //   alert("Please fill in all required fields.");
     //   return;
     // }
+    const taskToSubmit = {
+      ...formData,
+      id: editMode ? editMode.id : Date.now(),
+    };
 
-    onSubmit(formData);
+    onSubmit(taskToSubmit);
     setFormData({
       title: "",
       notes: "",
