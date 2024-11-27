@@ -1,36 +1,21 @@
-import {
-  DownloadOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  ReloadOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  Flex,
-  Input,
-  Layout,
-  Row,
-  Spin,
-  Tag,
-  Typography,
-} from "antd";
+import { Col, Layout, Row, Typography } from "antd";
 import React, { useState } from "react";
 import Categories from "../layouts/Categories";
-import CustomButton from "../components/CustomButton";
 import CustomModal from "../components/CustomModal";
 import CustomTable from "../components/CustomTable";
-import { categories } from "../mockData/categories";
 import ActionBar from "../layouts/ActionBar";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { addTask, editTask } from "../store/slices/toDoSlice";
 
 const { Content } = Layout;
-const { Text } = Typography;
 
 const Main = () => {
-  const [data, setData] = useState(categories);
+  const data = useSelector((state) => state.todoTask);
+  const dispatch = useDispatch();
+
   const [filterStatus, setFilterStatus] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [editMode, setEditMode] = useState(null);
   const [searchTitle, setSearchTitle] = useState("");
 
@@ -38,40 +23,14 @@ const Main = () => {
     setFilterStatus(selectedCategory);
   };
 
-  const handleSubmitTask = (newTask) => {
-    setIsLoading(true);
-
+  const handleSubmitTask = (task) => {
     if (editMode) {
-      setData((prev) => {
-        const updatedData = prev.map((category) => ({
-          ...category,
-          items: category.items.map((item) =>
-            item.id === newTask.id
-              ? {
-                  ...item,
-                  title: newTask.title,
-                  status: newTask.status,
-                  notes: newTask.notes,
-                  asignTo: newTask.asignTo,
-                  category: newTask.category,
-                }
-              : item
-          ),
-        }));
-        return updatedData;
-      });
+      dispatch(editTask({ id: editMode.id, updatedTask: task }));
     } else {
-      setData((prev) => {
-        const newTaskWithId = { ...newTask, id: Date.now() };
-        return prev.map((category) =>
-          category.status === newTask.status
-            ? { ...category, items: [...category.items, newTaskWithId] }
-            : category
-        );
-      });
+      dispatch(addTask({ status: task.status, task }));
     }
 
-    setIsLoading(false);
+    setModalOpen(false);
   };
 
   const openEditModal = (task) => {
@@ -89,17 +48,28 @@ const Main = () => {
     setSearchTitle(value);
   };
 
-  const filteredTasks = data
-    .flatMap((category) =>
-      filterStatus === "All"
-        ? category.items
-        : category.status === filterStatus.status
-        ? category.items
-        : []
-    )
-    .filter((task) =>
-      task.title.toLowerCase().includes(searchTitle.toLowerCase())
-    );
+  const filteredTasks = (data || [])
+    .flatMap((category) => {
+      console.log("Category:", category); // Log each category for debugging
+      if (filterStatus === "All") {
+        console.log("All status filter applied");
+        return category.items;
+      }
+      if (category.status === filterStatus.status) {
+        console.log("Status match found, returning items");
+        return category.items;
+      }
+      console.log("No status match");
+      return []; // If the status doesn't match, return an empty array
+    })
+    .filter((task) => {
+      console.log("Task:", task); // Log each task for debugging
+      return task.title.toLowerCase().includes(searchTitle.toLowerCase());
+    });
+
+  console.log("Filtered Tasks:", filteredTasks);
+  console.log("data111", data);
+  console.log("filteredTasks", filteredTasks);
 
   return (
     <Content
@@ -132,9 +102,7 @@ const Main = () => {
       </Row>
       <Row className="table">
         <Col span={24}>
-          <Spin spinning={isLoading} tip="Loading...">
-            <CustomTable data={filteredTasks} openEditModal={openEditModal} />
-          </Spin>
+          <CustomTable data={filteredTasks} openEditModal={openEditModal} />
         </Col>
       </Row>
 
