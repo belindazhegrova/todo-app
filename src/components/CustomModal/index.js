@@ -126,6 +126,7 @@ const CustomModal = ({
       closable={true}
       width={1000}
       footer={false}
+      className="custom-todo-modal"
     >
       <div style={{ margin: "30px" }}>
         <Flex gap="small" align="center" justify="center">

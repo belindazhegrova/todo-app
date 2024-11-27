@@ -29,7 +29,7 @@ const DraggableRow = ({ record, index, moveRow, children, ...restProps }) => {
   );
 };
 
-const CustomTable = ({ data, openEditModal }) => {
+const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
@@ -105,15 +105,15 @@ const CustomTable = ({ data, openEditModal }) => {
           >
             Edit
           </Button>
-          {/* <Button
-            onClick={() => handleDelete(record)}
+          <Button
+            onClick={() => openDeleteModal(record.id)}
             style={{
               backgroundColor: "#FE4C4A",
               width: "30px",
               height: "30px",
             }}
             icon={<DeleteOutlined style={{ color: "white" }} />}
-          ></Button> */}
+          ></Button>
         </div>
       ),
     },

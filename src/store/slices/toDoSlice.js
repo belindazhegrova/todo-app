@@ -29,8 +29,14 @@ const toDoSlice = createSlice({
         }
       });
     },
+    deleteTask: (state, action) => {
+      const { id } = action.payload;
+      state.forEach((category) => {
+        category.items = category.items.filter((item) => item.id !== id);
+      });
+    },
   },
 });
 
-export const { addTask, editTask } = toDoSlice.actions;
+export const { addTask, editTask, deleteTask } = toDoSlice.actions;
 export default toDoSlice.reducer;

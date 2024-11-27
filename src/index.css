@@ -1,5 +1,4 @@
-.ant-modal,
-.ant-modal-content {
+.custom-todo-modal .ant-modal-content {
   padding: 0px 0px 5px 0px !important;
 }
 
@@ -7,7 +6,7 @@
   height: 150px !important;
 }
 
-.ant-modal .ant-modal-close {
+.custom-todo-modal .ant-modal-close {
   top: 6px !important;
 }
 
@@ -32,4 +31,8 @@
   border: none !important;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
   transform: scale(1.06);
+}
+
+.custom-confirm-modal {
+  padding: 20px;
 }
