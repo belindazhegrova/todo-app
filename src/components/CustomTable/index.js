@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Table, Tag } from "antd";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import CustomButton from "../CustomButton";
 
 const type = "row";
 
@@ -73,7 +74,9 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
 
       render: (status) => (
         <span>
-          <Tag color={getStatusColor(status)}>{status}</Tag>
+          <Tag style={{ padding: "5px 20px" }} color={getStatusColor(status)}>
+            {status}
+          </Tag>
         </span>
       ),
     },
@@ -94,26 +97,23 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
       key: "action",
       render: (record) => (
         <div>
-          <Button
-            onClick={() => openEditModal(record)}
-            style={{
-              width: "60px",
-              height: "30px",
+          <CustomButton
+            icon={<EditOutlined />}
+            title="Edit"
+            onChange={() => openEditModal(record)}
+            customStyle={{
               backgroundColor: "#1264A3",
-              color: "white",
             }}
-          >
-            Edit
-          </Button>
-          <Button
-            onClick={() => openDeleteModal(record.id)}
-            style={{
+          />
+          <CustomButton
+            icon={<DeleteOutlined />}
+            title="Delete"
+            onChange={() => openDeleteModal(record.id)}
+            customStyle={{
+              marginLeft: "10px",
               backgroundColor: "#FE4C4A",
-              width: "30px",
-              height: "30px",
             }}
-            icon={<DeleteOutlined style={{ color: "white" }} />}
-          ></Button>
+          />
         </div>
       ),
     },

@@ -31,26 +31,32 @@ const ActionBar = ({
       </Col>
       <Col span={12}>
         <Flex justify="end" gap="small">
-          <Button
-            type="primary"
+          <CustomButton
+            message="Download File"
             icon={<DownloadOutlined />}
-            style={{
-              width: "32px",
+            customStyle={{
               height: "32px",
+              width: "32px",
               backgroundColor: "#1264A3",
             }}
           />
           <CustomButton
             icon={<PlusOutlined />}
-            backgroundColor="#71CF48"
             title="Create New"
             onChange={setModalOpen}
+            customStyle={{
+              width: "150px",
+              backgroundColor: "#71CF48",
+            }}
           />
           <CustomButton
             icon={<ReloadOutlined />}
-            backgroundColor="#B0B0B0"
             title="All Data"
             onChange={() => setFilterStatus("All")}
+            customStyle={{
+              width: "150px",
+              backgroundColor: "#B0B0B0",
+            }}
           />
         </Flex>
       </Col>

@@ -19,16 +19,38 @@ const toDoSlice = createSlice({
     },
     editTask: (state, action) => {
       const { id, updatedTask } = action.payload;
+      let movedTask = null;
+
       state.forEach((category) => {
         const taskIndex = category.items.findIndex((item) => item.id === id);
         if (taskIndex > -1) {
-          category.items[taskIndex] = {
-            ...category.items[taskIndex],
-            ...updatedTask,
-          };
+          const existingTask = category.items[taskIndex];
+
+          if (existingTask.status !== updatedTask.status) {
+            movedTask = {
+              ...existingTask,
+              ...updatedTask,
+            };
+            category.items.splice(taskIndex, 1);
+          } else {
+            category.items[taskIndex] = {
+              ...existingTask,
+              ...updatedTask,
+            };
+          }
         }
       });
+
+      if (movedTask) {
+        const targetCategory = state.find(
+          (category) => category.status === movedTask.status
+        );
+        if (targetCategory) {
+          targetCategory.items.push(movedTask);
+        }
+      }
     },
+
     deleteTask: (state, action) => {
       const { id } = action.payload;
       state.forEach((category) => {

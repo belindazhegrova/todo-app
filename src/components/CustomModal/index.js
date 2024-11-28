@@ -270,15 +270,21 @@ const CustomModal = ({
         <Flex style={{ marginTop: "40px" }} justify="space-between">
           <CustomButton
             title="Close & Dont Save"
-            backgroundColor="#EB4345"
             icon={<CloseOutlined />}
             onChange={onClose}
+            customStyle={{
+              width: "150px",
+              backgroundColor: "#FE4C4A",
+            }}
           />
           <CustomButton
             onChange={handleSubmit}
             title="Save Changes"
-            backgroundColor="#71CF48"
             icon={<CheckOutlined />}
+            customStyle={{
+              width: "150px",
+              backgroundColor: "#71CF48",
+            }}
           />
         </Flex>
       </div>

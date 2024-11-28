@@ -21,16 +21,22 @@ const CustomDeleteModal = ({ open, onSubmit, onClose }) => {
       action cannot be undone.
       <Flex style={{ marginTop: "40px" }} justify="space-between">
         <CustomButton
-          title="Close & Dont Save"
-          backgroundColor="#EB4345"
+          title="Close"
           icon={<CloseOutlined />}
           onChange={onClose}
+          customStyle={{
+            width: "150px",
+            backgroundColor: "#EB4345",
+          }}
         />
         <CustomButton
           onChange={onSubmit}
-          title="Save Changes"
-          backgroundColor="#71CF48"
+          title="Save"
           icon={<CheckOutlined />}
+          customStyle={{
+            width: "150px",
+            backgroundColor: "#71CF48",
+          }}
         />
       </Flex>
     </Modal>
