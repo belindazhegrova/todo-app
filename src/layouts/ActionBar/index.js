@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Input, Button, Flex, Typography, Row, Tag } from "antd";
+import { Col, Input, Flex, Typography, Tag } from "antd";
 import {
   DownloadOutlined,
   PlusOutlined,
@@ -16,6 +16,7 @@ const ActionBar = ({
   filterStatus,
   handleSearchChange,
   searchTitle,
+  handleDownloadPdf,
 }) => {
   return (
     <>
@@ -34,6 +35,7 @@ const ActionBar = ({
           <CustomButton
             message="Download File"
             icon={<DownloadOutlined />}
+            onChange={handleDownloadPdf}
             customStyle={{
               height: "32px",
               width: "32px",

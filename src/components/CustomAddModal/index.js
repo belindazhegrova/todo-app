@@ -47,7 +47,7 @@ const StyledDiv = styled.div`
   }
 `;
 
-const CustomModal = ({
+const CustomAddModal = ({
   categories,
   onClose,
   onSubmit,
@@ -292,4 +292,4 @@ const CustomModal = ({
   );
 };
 
-export default CustomModal;
+export default CustomAddModal;

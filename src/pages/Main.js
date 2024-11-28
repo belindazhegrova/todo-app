@@ -1,7 +1,8 @@
-import { Col, Layout, Row, Modal } from "antd";
+import { Col, Layout, Row } from "antd";
 import React, { useCallback, useState } from "react";
+import { jsPDF } from "jspdf";
 import Categories from "../layouts/Categories";
-import CustomModal from "../components/CustomModal";
+import CustomAddModal from "../components/CustomAddModal";
 import CustomTable from "../components/CustomTable";
 import ActionBar from "../layouts/ActionBar";
 import { useSelector } from "react-redux";
@@ -71,6 +72,40 @@ const Main = () => {
       task.title.toLowerCase().includes(searchTitle.toLowerCase())
     );
 
+  const handleDownloadPdf = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(12);
+    let yOffset = 10;
+
+    filteredTasks.forEach((task, index) => {
+      doc.setFontSize(14);
+      doc.text(`Task ${index + 1}:`, 10, yOffset);
+      yOffset += 8;
+
+      doc.setFontSize(12);
+      doc.text(`ID: ${task.id}`, 15, yOffset);
+      yOffset += 6;
+      doc.text(`Title: ${task.title}`, 15, yOffset);
+      yOffset += 6;
+      doc.text(`Notes: ${task.notes.replace(/<[^>]+>/g, "")}`, 15, yOffset); // Strip HTML tags
+      yOffset += 6;
+      doc.text(`Assigned To: ${task.asignTo}`, 15, yOffset);
+      yOffset += 6;
+      doc.text(`Status: ${task.status}`, 15, yOffset);
+      yOffset += 6;
+      doc.text(`Category: ${task.category}`, 15, yOffset);
+      yOffset += 12;
+
+      if (yOffset > 280) {
+        doc.addPage();
+        yOffset = 10;
+      }
+    });
+
+    doc.save("tasks.pdf");
+  };
+
   return (
     <Content
       className="main"
@@ -95,6 +130,7 @@ const Main = () => {
         <ActionBar
           setModalOpen={() => openModal("add")}
           setFilterStatus={setFilterStatus}
+          handleDownloadPdf={handleDownloadPdf}
           filterStatus={filterStatus}
           handleSearchChange={handleSearchChange}
           searchTitle={searchTitle}
@@ -113,7 +149,7 @@ const Main = () => {
 
       {modalState.open &&
         (modalState.type === "add" || modalState.type === "edit") && (
-          <CustomModal
+          <CustomAddModal
             filterStatus={filterStatus}
             categories={data}
             editMode={modalState.task}
