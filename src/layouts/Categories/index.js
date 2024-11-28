@@ -4,9 +4,9 @@ const { Text } = Typography;
 
 const Categories = ({ categories, onChange }) => {
   return (
-    <Row justify="center" gutter={24}>
-      {categories.map((cat) => {
-        return (
+    <Row justify="center" gutter={[24, 24]}>
+      {categories.length > 0 ? (
+        categories.map((cat) => (
           <Col xs={24} sm={12} md={8} lg={4} key={cat.id}>
             <Button
               onClick={() => onChange(cat)}
@@ -40,8 +40,10 @@ const Categories = ({ categories, onChange }) => {
               </Text>
             </Button>
           </Col>
-        );
-      })}
+        ))
+      ) : (
+        <Text>No categories available</Text>
+      )}
     </Row>
   );
 };

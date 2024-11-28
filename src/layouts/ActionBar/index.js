@@ -20,7 +20,7 @@ const ActionBar = ({
 }) => {
   return (
     <>
-      <Col span={12}>
+      <Col xs={24} sm={12} md={12} lg={12}>
         <Input
           value={searchTitle}
           onChange={handleSearchChange}
@@ -30,7 +30,7 @@ const ActionBar = ({
           prefix={<SearchOutlined style={{ fontSize: "18px" }} />}
         />
       </Col>
-      <Col span={12}>
+      <Col xs={24} sm={12} md={12} lg={12}>
         <Flex justify="end" gap="small">
           <CustomButton
             message="Download File"
@@ -62,7 +62,7 @@ const ActionBar = ({
           />
         </Flex>
       </Col>
-      <Col span={24}>
+      <Col xs={24} sm={24} md={24} lg={24}>
         {filterStatus && (
           <>
             <Text

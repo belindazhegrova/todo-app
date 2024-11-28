@@ -62,8 +62,9 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
       dataIndex: "drag",
       key: "drag",
       render: () => <DragOutlined style={{ cursor: "move" }} />,
-      width: 40,
       align: "center",
+      width: 40,
+      responsive: ["md", "sm"],
     },
     {
       title: "Task Title",
@@ -108,8 +109,9 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
     {
       title: "Action",
       key: "action",
+      width: 220,
       render: (record) => (
-        <div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <CustomButton
             icon={<EditOutlined />}
             title="Edit"
@@ -123,7 +125,6 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
             title="Delete"
             onChange={() => openDeleteModal(record.id)}
             customStyle={{
-              marginLeft: "10px",
               backgroundColor: "#FE4C4A",
             }}
           />
@@ -133,16 +134,20 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
   ];
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={HTML5Backend} style={{}}>
       <Table
         dataSource={tableData}
         columns={columns}
         pagination={false}
+        scroll={{
+          x: 200,
+        }}
         rowKey={(record, index) => index}
         components={{
           body: {
             row: (props) => (
               <DraggableRow
+                style={{ tableLayout: "fixed !important" }}
                 {...props}
                 index={props["data-row-key"]}
                 record={tableData[props["data-row-key"]]}
