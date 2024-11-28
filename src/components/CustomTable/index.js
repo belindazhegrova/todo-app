@@ -63,7 +63,7 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
       key: "drag",
       render: () => <DragOutlined style={{ cursor: "move" }} />,
       width: 40,
-      align: "center", // Ensure the icon is centered
+      align: "center",
     },
     {
       title: "Task Title",
@@ -97,7 +97,12 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
       title: "Notes",
       dataIndex: "notes",
       key: "notes",
-      render: (notes) => <span dangerouslySetInnerHTML={{ __html: notes }} />,
+      render: (notes) => {
+        const truncatedNotes =
+          notes.length > 100 ? notes.slice(0, 100) + "..." : notes;
+
+        return <span dangerouslySetInnerHTML={{ __html: truncatedNotes }} />;
+      },
     },
 
     {
