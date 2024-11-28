@@ -44,7 +44,7 @@ const ActionBar = ({
             icon={<PlusOutlined />}
             backgroundColor="#71CF48"
             title="Create New"
-            onChange={() => setModalOpen(true)}
+            onChange={setModalOpen}
           />
           <CustomButton
             icon={<ReloadOutlined />}

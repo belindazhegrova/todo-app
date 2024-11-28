@@ -1,5 +1,5 @@
 import { Col, Layout, Row, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Categories from "../layouts/Categories";
 import CustomModal from "../components/CustomModal";
 import CustomTable from "../components/CustomTable";
@@ -16,49 +16,45 @@ const Main = () => {
   const dispatch = useDispatch();
 
   const [filterStatus, setFilterStatus] = useState("All");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editMode, setEditMode] = useState(null);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleteTaskId, setDeleteTaskId] = useState(null);
+  const [modalState, setModalState] = useState({
+    open: false,
+    type: null,
+    task: null,
+  });
+
   const [searchTitle, setSearchTitle] = useState("");
 
   const handleStatusChange = (selectedCategory) => {
     setFilterStatus(selectedCategory);
   };
 
-  const handleSubmitTask = (task) => {
-    if (editMode) {
-      dispatch(editTask({ id: editMode.id, updatedTask: task }));
-    } else {
-      dispatch(addTask({ status: task.status, task }));
+  const openModal = useCallback((type, task = null) => {
+    setModalState({ open: true, type, task });
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setModalState({ open: false, type: null, task: null });
+  }, []);
+
+  const handleSubmitTask = useCallback(
+    (task) => {
+      if (modalState.type === "edit") {
+        dispatch(editTask({ id: modalState.task.id, updatedTask: task }));
+      } else if (modalState.type === "add") {
+        dispatch(addTask({ status: task.status, task }));
+      }
+
+      closeModal();
+    },
+    [dispatch, modalState, closeModal]
+  );
+
+  const handleDelete = useCallback(() => {
+    if (modalState.type === "delete") {
+      dispatch(deleteTask({ id: modalState.task }));
+      closeModal();
     }
-
-    setModalOpen(false);
-  };
-
-  const openEditModal = (task) => {
-    setEditMode(task);
-    setModalOpen(true);
-  };
-
-  const openDeleteModal = (taskId) => {
-    setDeleteTaskId(taskId);
-    setDeleteModalOpen(true);
-  };
-
-  const handleDelete = () => {
-    if (deleteTaskId) {
-      dispatch(deleteTask({ id: deleteTaskId }));
-      setDeleteModalOpen(false);
-      setDeleteTaskId(null);
-    }
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setEditMode(null);
-    setDeleteModalOpen(false);
-  };
+  }, [dispatch, modalState, closeModal]);
 
   const handleSearchChange = (event) => {
     const { value } = event.target;
@@ -66,18 +62,14 @@ const Main = () => {
   };
 
   const filteredTasks = (data || [])
-    .flatMap((category) => {
-      if (filterStatus === "All") {
-        return category.items;
-      }
-      if (category.status === filterStatus.status) {
-        return category.items;
-      }
-      return [];
-    })
-    .filter((task) => {
-      return task.title.toLowerCase().includes(searchTitle.toLowerCase());
-    });
+    .flatMap((category) =>
+      filterStatus === "All" || category.status === filterStatus.status
+        ? category.items
+        : []
+    )
+    .filter((task) =>
+      task.title.toLowerCase().includes(searchTitle.toLowerCase())
+    );
 
   return (
     <Content
@@ -101,7 +93,7 @@ const Main = () => {
         style={{ margin: "25px 0px" }}
       >
         <ActionBar
-          setModalOpen={setModalOpen}
+          setModalOpen={() => openModal("add")}
           setFilterStatus={setFilterStatus}
           filterStatus={filterStatus}
           handleSearchChange={handleSearchChange}
@@ -112,26 +104,27 @@ const Main = () => {
         <Col span={24}>
           <CustomTable
             data={filteredTasks}
-            openEditModal={openEditModal}
+            openEditModal={(task) => openModal("edit", task)}
             handleDelete={handleDelete}
-            openDeleteModal={openDeleteModal}
+            openDeleteModal={(task) => openModal("delete", task)}
           />
         </Col>
       </Row>
 
-      {modalOpen && (
-        <CustomModal
-          filterStatus={filterStatus}
-          categories={data}
-          editMode={editMode}
-          onClose={closeModal}
-          onSubmit={handleSubmitTask}
-          open={() => setModalOpen(true)}
-        />
-      )}
-      {deleteModalOpen && (
+      {modalState.open &&
+        (modalState.type === "add" || modalState.type === "edit") && (
+          <CustomModal
+            filterStatus={filterStatus}
+            categories={data}
+            editMode={modalState.task}
+            onClose={closeModal}
+            onSubmit={handleSubmitTask}
+            open={modalState.open}
+          />
+        )}
+      {modalState.open && modalState.type === "delete" && (
         <CustomDeleteModal
-          open={deleteModalOpen}
+          open={modalState.open}
           onSubmit={handleDelete}
           onClose={closeModal}
         />

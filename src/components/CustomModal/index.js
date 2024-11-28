@@ -63,6 +63,13 @@ const CustomModal = ({
     status: filterStatus.status || "",
     category: "",
   });
+  const [errors, setErrors] = useState({
+    title: "",
+    notes: "",
+    asignTo: "",
+    status: "",
+    category: "",
+  });
 
   useEffect(() => {
     if (editMode) {
@@ -76,35 +83,51 @@ const CustomModal = ({
     }
   }, [editMode]);
 
-  const handleMouseEnter = (status) => {
-    setHoveredStatus(status);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredStatus(null);
-  };
+  const handleMouseEnter = (status) => setHoveredStatus(status);
+  const handleMouseLeave = () => setHoveredStatus(null);
 
   const handleSubmit = () => {
-    // if (!formData.title || !formData.status || !formData.category) {
-    //   alert("Please fill in all required fields.");
-    //   return;
-    // }
-    const taskToSubmit = {
-      ...formData,
-      id: editMode ? editMode.id : Date.now(),
-    };
+    if (validateForm()) {
+      const taskToSubmit = {
+        ...formData,
+        id: editMode ? editMode.id : Date.now(),
+      };
 
-    onSubmit(taskToSubmit);
-    setFormData({
-      title: "",
-      notes: "",
-      asignTo: "",
-      status: filterStatus.status || "",
-      category: "",
-    });
-    onClose();
+      onSubmit(taskToSubmit);
+      setFormData({
+        title: "",
+        notes: "",
+        asignTo: "",
+        status: filterStatus.status || "",
+        category: "",
+      });
+      onClose();
+    }
   };
 
+  const handleInputChange = (key, value) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    ["title", "category", "asignTo", "notes", "status"].forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } is required`;
+        isValid = false;
+      } else {
+        newErrors[field] = "";
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
   return (
     <Modal
       title={
@@ -136,6 +159,7 @@ const CustomModal = ({
             information below,make sure to select a satus
           </Title>
         </Flex>
+
         <Row align="center" style={{ gap: "18px" }}>
           {categories.map((cat) => (
             <Col key={cat.status}>
@@ -149,9 +173,7 @@ const CustomModal = ({
                 }}
                 onMouseEnter={() => handleMouseEnter(cat.status)}
                 onMouseLeave={handleMouseLeave}
-                onClick={() =>
-                  setFormData((prev) => ({ ...prev, status: cat.status }))
-                }
+                onClick={() => handleInputChange("status", cat.status)}
                 color={cat.backgroundColor}
               >
                 {cat.status}
@@ -159,6 +181,15 @@ const CustomModal = ({
             </Col>
           ))}
         </Row>
+        {errors.status && (
+          <Title
+            style={{ textAlign: "center", fontSize: "13px" }}
+            type="danger"
+          >
+            {errors.status}
+          </Title>
+        )}
+
         <Row align="center" gutter={16}>
           <Col span={8}>
             <Typography.Title style={{ fontSize: "18px" }}>
@@ -167,11 +198,14 @@ const CustomModal = ({
             <Input
               value={formData.title}
               className="custom-input"
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, title: e.target.value }))
-              }
+              onChange={(e) => handleInputChange("title", e.target.value)}
               placeholder="Write Title"
             />
+            {errors.title && (
+              <Typography.Title style={{ fontSize: "13px" }} type="danger">
+                {errors.title}
+              </Typography.Title>
+            )}
           </Col>
           <Col span={8}>
             <Typography.Title style={{ fontSize: "18px" }}>
@@ -182,15 +216,18 @@ const CustomModal = ({
               placeholder="Select task category"
               style={{ width: "100%" }}
               value={formData.category || undefined}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, category: value }))
-              }
+              onChange={(value) => handleInputChange("category", value)}
               options={[
                 { value: "test1", label: "Test 1" },
                 { value: "test2", label: "Test 2" },
                 { value: "test3", label: "Test 3" },
               ]}
             />
+            {errors.category && (
+              <Typography.Title style={{ fontSize: "13px" }} type="danger">
+                {errors.category}
+              </Typography.Title>
+            )}
           </Col>
           <Col span={8}>
             <Typography.Title style={{ fontSize: "18px" }}>
@@ -201,15 +238,18 @@ const CustomModal = ({
               style={{ width: "100%" }}
               value={formData.asignTo || undefined}
               className="custom-select"
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, asignTo: value }))
-              }
+              onChange={(value) => handleInputChange("asignTo", value)}
               options={[
                 { value: "test1", label: "User 1" },
                 { value: "test2", label: "User 2" },
                 { value: "test3", label: "User 3" },
               ]}
             />
+            {errors.asignTo && (
+              <Typography.Title style={{ fontSize: "13px" }} type="danger">
+                {errors.asignTo}
+              </Typography.Title>
+            )}
           </Col>
           <Col span={24}>
             <Typography.Title style={{ fontSize: "18px" }}>
@@ -218,10 +258,13 @@ const CustomModal = ({
             <ReactQuill
               theme="snow"
               value={formData.notes}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, notes: value }))
-              }
+              onChange={(value) => handleInputChange("notes", value)}
             />
+            {errors.notes && (
+              <Typography.Title style={{ fontSize: "13px" }} type="danger">
+                {errors.notes}
+              </Typography.Title>
+            )}
           </Col>
         </Row>
         <Flex style={{ marginTop: "40px" }} justify="space-between">
