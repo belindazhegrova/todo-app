@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { DeleteOutlined, EditOutlined, DragOutlined } from "@ant-design/icons";
 import { Table, Tag } from "antd";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 import CustomButton from "../CustomButton";
 
 const type = "row";
