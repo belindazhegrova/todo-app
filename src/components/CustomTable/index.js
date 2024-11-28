@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, DragOutlined } from "@ant-design/icons";
 import { Table, Tag } from "antd";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -57,6 +57,14 @@ const CustomTable = ({ data, openEditModal, openDeleteModal }) => {
   };
 
   const columns = [
+    {
+      title: "",
+      dataIndex: "drag",
+      key: "drag",
+      render: () => <DragOutlined style={{ cursor: "move" }} />,
+      width: 40,
+      align: "center", // Ensure the icon is centered
+    },
     {
       title: "Task Title",
       dataIndex: "title",
